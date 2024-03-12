@@ -4,21 +4,22 @@ from typing import List
 
 Base = declarative_base()
 
-class Employees(Base):
-    __tablename__ = "employees"
+class Employee(Base):
+    __tablename__ = "employee"
 
-    employeeId = Column(Integer, primary_key=True)
-    firstName = Column(String)
-    lastName = Column(String)
-    birthDate = Column(Date)
-    baseSalary = Column(Integer)
-    hireDate = Column(Date)
-    team_id = Column(Integer, ForeignKey("teams.teamId"))
-    team = relationship("Teams", back_populates="members")
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String)
+    last_name = Column(String)
+    birth_date = Column(Date)
+    base_salary = Column(Integer)
+    hire_date = Column(Date)
+    team_id = Column(Integer, ForeignKey("team.id"), nullable=True)
+    team = relationship("Team", back_populates="members")
 
-class Teams(Base):
-    __tablename__ = "teams"
 
-    teamId = Column(Integer, primary_key=True)
-    leaderId = Column(Integer)
-    mebers = relationship("Employees", back_populates="team", cascade="all, delete-orphan")
+class Team(Base):
+    __tablename__ = "team"
+
+    id = Column(Integer, primary_key=True)
+    leader_id = Column(Integer)
+    members = relationship("Employee", back_populates="team", cascade="all, delete-orphan")

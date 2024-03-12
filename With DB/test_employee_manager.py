@@ -1,25 +1,22 @@
 import unittest
+
 from datetime import date
 
 from employee_manager import EmployeeManager
 from relations_manager import RelationsManager
-from employee import Employee
+
+from databse import DB
+from models import Employee
 
 class TestEmployeeManager(unittest.TestCase):
 
     def setUp(self):
-        self.rm = RelationsManager()
+        self.DB = DB()
+        self.rm = RelationsManager(db=self.DB)
         self.em = EmployeeManager(relations_manager=self.rm)
     
     def test_not_team_leader_salary(self):
-        employee = Employee(
-            id=10,
-            first_name="John",
-            last_name="Doe",
-            birth_date=date(1980, 1, 1),
-            base_salary=1000,
-            hire_date=date(1998, 10, 10)
-        )
+        employee = self.DB.get_employee(2)
 
         expected_salary = 3600
         salary = self.em.calculate_salary(employee)

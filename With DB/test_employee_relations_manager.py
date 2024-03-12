@@ -2,7 +2,7 @@ import unittest
 import datetime
 
 from relations_manager import RelationsManager
-from employee import Employee
+from models import Employee
 
 class TestEmployeeRelationsManager(unittest.TestCase):
 
