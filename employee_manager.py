@@ -26,8 +26,10 @@ class EmployeeManager:
     def calculate_salary_and_send_email(self, employee: Employee) -> None:
         salary = self.calculate_salary(employee)
 
-        print(f"{employee.first_name} {employee.last_name} your salary: {salary} has been transferred to you.")
-        pass
+        msg = f"{employee.first_name} {employee.last_name} your salary: {salary} has been transferred to you."
+        print(msg)
+        
+        return msg
 
 
 if __name__ == '__main__':
