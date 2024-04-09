@@ -4,10 +4,10 @@ from models import Employee, Team
 from databse import DB
 
 class RelationsManager:
-    def __init__(self, db=None):
-        self.DB = db
-        self.employee_list = self.DB.get_employees()
-        self._teams = self.DB.get_teams()
+    def __init__(self, session=None):
+        self.session = session
+        self.employee_list = self.session.query(Employee).all()
+        self._teams = self.session.query(Team).all()
 
         self.teams = {}
         for team in self._teams:

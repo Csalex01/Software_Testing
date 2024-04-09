@@ -2,15 +2,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from models import Base
 
+from sqlalchemy.orm import sessionmaker
+
 from models import Employee, Team
 class DB:
-    __instance = None
 
-    def __init__(self):
-        if DB.__instance is not None:
-            raise Exception("This class is Singleton!")
-        else:
-            DB.__instance = self
+    def __init__(self, session=None):
 
         self.engine = None
         self.connection = None
@@ -26,6 +23,7 @@ class DB:
         self.engine = create_engine(f"sqlite:///{self.DB_NAME}", echo=True)
         self.metadata = Base.metadata  # Associate metadata with the engine
         self.metadata.bind = self.engine
+        self.session = sessionmaker(bind=self.engine)
         self.connection = self.engine.connect()
 
     def init_database(self):
@@ -36,38 +34,32 @@ class DB:
         self.engine.dispose()
 
     def insert_employee(self, employee):
-        with Session(self.engine) as session:
-            session.add(employee)
-            session.commit()
+        self.session.add(employee)
+        self.session.commit()
 
     def insert_employees(self, employees):
-        with Session(self.engine) as session:
-            session.add_all(employees)
-            session.commit()
+        self.session.add_all(employees)
+        self.session.commit()
 
     def get_employees(self):
-        with Session(self.engine) as session:
-            return session.query(Employee).all()
+        return self.session.query(Employee).all()
 
     def get_employee(self, id):
-        with Session(self.engine) as session:
-            return session.query(Employee).filter(Employee.id == id).first()
+        return self.session.query(Employee).filter(Employee.id == id).first()
 
     def insert_team(self, team):
-        with Session(self.engine) as session:
-            session.add(team)
-            session.commit()
+        self.session.add(team)
+        self.session.commit()
 
     def insert_teams(self, teams):
-        with Session(self.engine) as session:
-            session.add_all(teams)
-            session.commit()
+        self.session.add_all(teams)
+        self.session.commit()
 
     def get_teams(self):
-        with Session(self.engine) as session:
-            return session.query(Team).all()
+        return self.session.query(Team).all()
 
     def get_team(self, id):
-        with Session(self.engine) as session:
-            return session.query(Team).filter(Team.id == id).first()
+        return self.session.query(Team).filter(Team.id == id).first()
     
+    def get_session(self):
+        return Session(self.engine)

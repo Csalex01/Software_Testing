@@ -7,8 +7,7 @@ class EmployeeManager:
     yearly_bonus = 100
     leader_bonus_per_member = 200
 
-    def __init__(self, db=None, relations_manager: RelationsManager=None):
-        self.DB = db
+    def __init__(self, relations_manager: RelationsManager=None):
         self.relations_manager = relations_manager
 
     def calculate_salary(self, employee: Employee) -> int:

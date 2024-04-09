@@ -5,49 +5,45 @@ from datetime import date
 from employee_manager import EmployeeManager
 from relations_manager import RelationsManager
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from databse import DB
 from models import Employee
 
 class TestEmployeeManager(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls.engine = create_engine("sqlite:///employees.db")
+        session = sessionmaker(bind=cls.engine)
+        cls.session = session()
+
     def setUp(self):
-        self.DB = DB()
-        self.rm = RelationsManager(db=self.DB)
+        
+        self.rm = RelationsManager(session=self.session)
         self.em = EmployeeManager(relations_manager=self.rm)
     
     def test_not_team_leader_salary(self):
-        employee = self.DB.get_employee(2)
+        employee = self.session.query(Employee).filter_by(first_name="Tomas").first()
+        self.assertIsNotNone(employee, "Employee does not exist in the database")
 
-        expected_salary = 3600
-        salary = self.em.calculate_salary(employee)
+        calculated_salary = self.em.calculate_salary(employee)
+        expected_salary = 2500
 
-        self.assertEqual(expected_salary, salary)
+        self.assertEqual(expected_salary, calculated_salary)
 
     def test_team_leader_salary(self):
-        leader = Employee(
-            id=7,
-            first_name="Jane",
-            last_name="Doe",
-            birth_date=date(1980, 1, 1),
-            base_salary=2000,
-            hire_date=date(2008, 10, 10)
-        )
+        leader = self.session.query(Employee).filter_by(first_name="Gretchen").first()
+        self.assertIsNotNone(leader, "Team Leader does not exist in the database")
 
-        self.rm.teams[7] = [8, 9, 10]
-        salary = self.em.calculate_salary(leader)
+        calculated_salary = self.em.calculate_salary(leader)
+        expected_salary = 7400
 
-        expected_salary = 3600
-        self.assertEqual(expected_salary, salary)
+        self.assertEqual(expected_salary, calculated_salary)
 
-    def test_email_notfication(self):
-        employee = Employee(
-            id=10,
-            first_name="John",
-            last_name="Doe",
-            birth_date=date(1980, 1, 1),
-            base_salary=3000,
-            hire_date=date(1998, 10, 10)
-        )
+    def test_email_notification(self):
+        employee = self.session.query(Employee).filter(Employee.id == 1).first()
 
         salary = self.em.calculate_salary(employee)
         expected_message = f"{employee.first_name} {employee.last_name} your salary: {salary} has been transferred to you."

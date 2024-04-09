@@ -69,3 +69,12 @@ class TestEmployeeRelationsManager(unittest.TestCase):
 
         self.assertFalse(self.rm.is_leader(tomas_andre))
         self.assertEqual(self.rm.get_team_members(tomas_andre), None)
+
+    def test_jude_overcash_not_in_database(self):
+        jude_overcash = Employee(id=7, first_name="Jude", last_name="Overcash",
+                                base_salary=2500, birth_date=datetime.date(1985, 1, 1),
+                                hire_date=datetime.date(2010, 1, 1))
+
+        all_employees = self.rm.get_all_employees()
+        
+        self.assertNotIn(jude_overcash, all_employees)
